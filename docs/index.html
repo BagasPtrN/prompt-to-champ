@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prompt to Champ — Game Party Prompt AI untuk UMKM</title>
+<meta name="description" content="Game party multiplayer: tulis prompt, AI buatkan poster produk UMKM, saling menilai, juara podium. Demo bisa langsung dimainkan di browser.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="p2c.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏆</text></svg>">
+</head>
+<body>
+<main>
+
+  <!-- ============ HERO ============ -->
+  <header class="hero wrap">
+    <span class="kicker">✦ Pelatihan AI untuk UMKM · Ice-breaker game</span>
+    <h1>PROMPT<br>to <span class="serif">Champ</span> 🏆</h1>
+    <p class="sub">Game party ala <b>Pictionary modern</b> — pemain menulis <b>prompt</b>,
+    AI menggambarkannya jadi <b>poster produk UMKM</b>, lalu semua pemain saling menilai.
+    Siapa prompt-nya paling jitu, dialah juaranya.</p>
+    <div class="cta">
+      <a class="tile" href="demo.html">▶ MAINKAN DEMO</a>
+      <a class="tile ghost" href="https://github.com/BagasPtrN/prompt-to-champ" target="_blank" rel="noopener">⌨ Kode sumber</a>
+    </div>
+    <div class="herometa">
+      <span class="pill">3–30 pemain</span>
+      <span class="pill">HP + proyektor</span>
+      <span class="pill">tanpa akun / install</span>
+      <span class="pill">provider gambar: mock / OpenAI</span>
+    </div>
+  </header>
+
+  <!-- ============ ALUR ============ -->
+  <section class="wrap">
+    <span class="kicker">Cara main</span>
+    <h2>Lima menit, satu ronde, <span class="serif">seru</span></h2>
+    <div class="steps">
+      <div class="step"><div class="n">01</div><div class="e">📋</div><b>Brief produk</b><span>foto produk UMKM asli + keunggulan &amp; harga</span></div>
+      <div class="step"><div class="n">02</div><div class="e">✍️</div><b>Tulis prompt</b><span>bebas — dibantu chip frasa (gaya, cahaya, kamera…)</span></div>
+      <div class="step"><div class="n">03</div><div class="e">🎨</div><b>AI menggambar</b><span>setiap prompt jadi poster masing-masing</span></div>
+      <div class="step"><div class="n">04</div><div class="e">⭐</div><b>Rating 1–10</b><span>poster tampil satu-per-satu di layar besar</span></div>
+      <div class="step"><div class="n">05</div><div class="e">🏆</div><b>Podium</b><span>top 3 naik tribun + papan skor akumulatif</span></div>
+    </div>
+  </section>
+
+  <!-- ============ GALERI ============ -->
+  <section class="wrap">
+    <span class="kicker">Contoh hasil</span>
+    <h2>Satu produk, <span class="serif">seribu gaya</span></h2>
+    <p class="sub">Ini poster sungguhan dari aset permainan — tiap pemain menghasilkan variasi poster berbeda dari produk yang sama.</p>
+    <div class="pgrid">
+      <figure><img src="assets/posters/dimsum.jpg" alt="Contoh poster Dimsum Ayam Keju" loading="lazy"><figcaption>🥟 Dimsum Ayam Keju</figcaption></figure>
+      <figure><img src="assets/posters/kue.jpg" alt="Contoh poster Kue Ulang Tahun" loading="lazy"><figcaption>🎂 Kue Ulang Tahun Custom</figcaption></figure>
+      <figure><img src="assets/posters/pempek.jpg" alt="Contoh poster Pempek Kapal Selam" loading="lazy"><figcaption>🐟 Pempek Kapal Selam</figcaption></figure>
+    </div>
+    <div class="pgrid" style="grid-template-columns:repeat(3,1fr)">
+      <figure><img class="prod" src="assets/products/dimsum.jpg" alt="Foto produk dimsum" loading="lazy"><figcaption>Foto produk asli di brief</figcaption></figure>
+      <figure><img class="prod" src="assets/products/kue.jpg" alt="Foto produk kue" loading="lazy"><figcaption>Host juga bisa upload foto sendiri</figcaption></figure>
+      <figure><img class="prod" src="assets/products/pempek.jpg" alt="Foto produk pempek" loading="lazy"><figcaption>15 brief UMKM bawaan</figcaption></figure>
+    </div>
+  </section>
+
+  <!-- ============ KENAPA ============ -->
+  <section class="wrap">
+    <div class="card">
+      <span class="kicker">Kenapa dipakai di pelatihan</span>
+      <h2>Belajar prompt AI sambil <span class="serif">bermain</span></h2>
+      <p class="sub" style="margin-top:6px">Dirancang untuk peserta pelatihan AI UMKM — termasuk yang kurang lancar mengetik:
+      input utama <b>tulis bebas</b>, dengan <b>chip bantuan frasa</b> (gaya/cahaya/kamera/latar/font/mood)
+      yang tinggal diketuk. Bahasa antarmuka Indonesia sehari-hari, tombol besar, alur ala game ponsel.</p>
+      <div class="hr"></div>
+      <p class="mono" style="font-size:12.5px;color:var(--muted)">
+        Server = sumber kebenaran (fase &amp; timer) · Socket.IO realtime · reconnect token ·
+        mode juri host · bot uji otomatis · rekap &amp; ZIP poster per room · API key OpenAI hanya di server (.env)
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ JALANKAN ============ -->
+  <section class="wrap">
+    <span class="kicker">Versi multiplayer penuh</span>
+    <h2>Jalankan sendiri di <span class="serif">laptop</span> + proyektor</h2>
+    <p class="sub">Demo di halaman ini versi pemain-tunggal. Untuk party sungguhan 3–30 pemain,
+    jalankan server Node.js-nya (gratis, provider gambar mock tanpa API key):</p>
+    <pre class="code"><span class="c"># butuh Node.js 18+</span>
+git clone https://github.com/BagasPtrN/prompt-to-champ
+cd prompt-to-champ
+npm install
+npm start
+
+<span class="c"># buka host di proyektor:</span>
+<span class="p">➜ http://localhost:3000</span>  <span class="c"># scan QR / share tautan /IP:3000 ke pemain</span></pre>
+    <p class="sub" style="margin-top:14px">Mau poster beneran dari AI? Salin <span class="mono">.env.example</span> jadi
+    <span class="mono">.env</span>, isi <span class="mono">OPENAI_API_KEY</span>, ganti
+    <span class="mono">IMAGE_PROVIDER</span> — kunci tidak pernah dikirim ke browser.</p>
+  </section>
+
+  <footer>
+    <div class="wrap">
+      <span>✦ <b>Prompt to Champ</b> — dibuat untuk <i>Pelatihan AI untuk UMKM</i></span>
+      <span class="mono" style="font-size:12px"><a href="https://github.com/BagasPtrN/prompt-to-champ" target="_blank" rel="noopener">github.com/BagasPtrN/prompt-to-champ</a></span>
+    </div>
+  </footer>
+</main>
+</body>
+</html>
