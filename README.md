@@ -1,4 +1,4 @@
-# ✦ Prompt to Champ
+# ✦ JadiPrompter
 
 Game multiplayer real-time untuk pelatihan **AI untuk UMKM**: semua pemain mendapat brief produk yang sama, menulis **prompt**, AI membuat **poster** dari prompt itu, lalu semua saling voting. Yang diadu bukan kemampuan menggambar — tapi kemampuan **menulis prompt**. Juaranya digelari **Prompt Champ**.
 

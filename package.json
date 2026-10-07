@@ -1,5 +1,5 @@
 {
-  "name": "prompt-to-champ",
+  "name": "jadiprompter",
   "version": "1.0.0",
   "description": "Game multiplayer real-time: tulis prompt, AI bikin poster, voting — untuk pelatihan UMKM",
   "main": "server/index.js",

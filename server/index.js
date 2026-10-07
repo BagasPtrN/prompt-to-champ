@@ -1,6 +1,6 @@
 'use strict';
 /* ============================================================
-   PROMPT TO CHAMP — server entry point
+   JADIPROMPTER — server entry point
    Express + Socket.IO. Jalankan: npm start  (default :3000)
    ============================================================ */
 
@@ -72,7 +72,7 @@ app.get('/img/:code/:file', (req, res) => {
 app.get('/api/room/:code/zip', (req, res) => {
   const room = rooms.getRoom(req.params.code);
   if (!room) return res.status(404).json({ ok: false, reason: 'Room tidak ditemukan' });
-  const zipName = `prompt-to-champ-${room.code}.zip`;
+  const zipName = `jadiprompter-${room.code}.zip`;
   res.setHeader('Content-Type', 'application/zip');
   res.setHeader('Content-Disposition', `attachment; filename="${zipName}"`);
 
@@ -108,7 +108,7 @@ function buildRecapData(room){
   const ranking = room.finalRanking || rooms.publicState(room).leaderboard || [];
 
   const text = [
-    `PROMPT TO CHAMP — REKAP ROOM ${room.code}`,
+    `JADIPROMPTER — REKAP ROOM ${room.code}`,
     `Diunduh: ${new Date().toLocaleString('id-ID')}`,
     '',
     'PAPAN SKOR AKHIR:',
@@ -135,7 +135,7 @@ function buildRecapData(room){
   const rows = ranking.map(r => `<tr><td>${r.rank}</td><td>${esc(r.name)}</td><td>${r.score}</td></tr>`).join('');
 
   const html = `<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8">
-<title>Rekap ${room.code} — Prompt to Champ</title>
+<title>Rekap ${room.code} — JadiPrompter</title>
 <style>
   body{font-family:Arial,Helvetica,sans-serif;background:#faf9f6;color:#17100f;margin:24px}
   h1{color:#e3000c;letter-spacing:-.02em} h2{margin-top:28px;border-bottom:3px solid #e3000c;padding-bottom:6px}
@@ -148,7 +148,7 @@ function buildRecapData(room){
   table{border-collapse:collapse;margin-top:8px}td,th{border:1px solid #ece8e2;padding:6px 14px;text-align:left}
   th{background:#f3f0ea} .noprint{margin:12px 0}@media print{.noprint{display:none}}
 </style></head><body>
-<h1>✦ Prompt to Champ — Rekap Room ${room.code}</h1>
+<h1>✦ JadiPrompter — Rekap Room ${room.code}</h1>
 <p>${new Date().toLocaleString('id-ID')} · ${room.activePlayers().length} pemain · ${rounds.length} ronde</p>
 <div class="noprint"><button onclick="window.print()" style="padding:10px 18px;font-size:15px;background:#e3000c;color:#fff;border:none;border-radius:10px;cursor:pointer">Cetak / Simpan PDF</button></div>
 <h2>Papan Skor</h2>
@@ -235,7 +235,7 @@ process.on('unhandledRejection', (err) => {
 
 server.listen(PORT, () => {
   console.log('==================================================');
-  console.log('  ✦ PROMPT TO CHAMP — server jalan');
+  console.log('  ✦ JADIPROMPTER — server jalan');
   console.log(`  Lokal   : http://localhost:${PORT}`);
   console.log(`  Provider: ${require('./imageProviders').name}`);
   console.log('==================================================');

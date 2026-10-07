@@ -1,5 +1,5 @@
 'use strict';
-/* SFX + util bersama — Prompt to Champ */
+/* SFX + util bersama — JadiPrompter */
 
 /* ---------- util ---------- */
 function esc(s){
