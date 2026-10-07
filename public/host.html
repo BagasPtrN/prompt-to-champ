@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Host — Prompt to Champ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="scroll">
+<span class="tick tl"></span><span class="tick tr"></span><span class="tick bl"></span><span class="tick br"></span>
+
+<div class="topbar">
+  <div class="left">
+    <span class="micro">✦ PROMPT TO CHAMP</span>
+    <span class="micro" id="t-code" style="color:var(--accent-light);font-weight:600">ROOM ----</span>
+    <span class="micro" id="t-round"></span>
+  </div>
+  <div class="left">
+    <button class="ghostbtn" id="c-pause">⏸ JEDA</button>
+    <button class="ghostbtn" id="c-addtime">+30 DETIK</button>
+    <button class="ghostbtn" id="c-skip">⏭ LEWATI FASE</button>
+    <button class="ghostbtn" data-mute>🔊 SUARA</button>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- ============ LOBBY ============ -->
+  <section id="ph-lobby">
+    <div class="joinpanel card">
+      <div class="qr" id="qrbox"><div class="micro" style="color:#17100f">memuat…</div></div>
+      <div>
+        <div class="micro">SCAN QR ATAU KUNJUNGI</div>
+        <div class="roomcode" id="code-big">----</div>
+        <div class="joinurl" id="join-url"></div>
+        <div style="margin-top:12px"><button class="ghostbtn" id="btn-copyurl">SALIN LINK</button></div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px" class="lobbycols">
+      <div class="card">
+        <h4 class="micro" style="margin-bottom:12px">PEMAIN — <span id="pcount">0</span> (MINIMAL 3)</h4>
+        <div id="as-banner" class="asbanner" style="display:none">
+          <div class="micro" style="color:#f5c069">PEMAIN SUDAH CUKUP — SIAP-SIAP!</div>
+          <div class="n"><span id="as-count">5</span></div>
+          <div class="micro">MULAI OTOMATIS</div>
+        </div>
+        <div class="pgrid" id="playerlist"></div>
+        <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap">
+          <button class="tile big" id="btn-start">MULAI GAME →</button>
+          <span class="micro" id="start-hint" style="align-self:center"></span>
+        </div>
+        <div style="margin-top:14px" class="card" id="settingsbox">
+          <h4 class="micro" style="margin-bottom:8px">PENGATURAN</h4>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px" class="setgrid">
+            <div class="field"><label>JUMLAH RONDE</label><input type="number" id="s-rounds" min="1" max="10" value="3"></div>
+            <div class="field"><label>WAKTU PROMPT</label>
+              <select id="s-promptms">
+                <option value="60000">60 detik</option>
+                <option value="90000" selected>90 detik</option>
+                <option value="120000">120 detik</option>
+                <option value="180000">180 detik</option>
+              </select></div>
+            <div class="field"><label>WAKTU PER POSTER SAAT PENILAIAN</label>
+              <select id="s-votems">
+                <option value="8000">8 detik</option>
+                <option value="12000" selected>12 detik</option>
+                <option value="20000">20 detik</option>
+              </select></div>
+            <div class="field"><label>KATEGORI</label>
+              <select id="s-cat">
+                <option value="random" selected>Acak tiap ronde</option>
+                <option value="beverages">Minuman saja</option>
+                <option value="food">Makanan saja</option>
+                <option value="fashion">Fashion saja</option>
+              </select></div>
+          </div>
+          <div class="switchrow"><span style="font-size:14px">Generate ulang 1× per pemain</span>
+            <label class="switch"><input type="checkbox" id="s-regen" checked><i></i></label></div>
+          <div class="switchrow"><span style="font-size:14px">Panel Tips Prompt di HP</span>
+            <label class="switch"><input type="checkbox" id="s-tips" checked><i></i></label></div>
+          <div class="switchrow"><span style="font-size:14px">Bonus Pilihan Juri (+5)</span>
+            <label class="switch"><input type="checkbox" id="s-jury" checked><i></i></label></div>
+          <div class="switchrow"><span style="font-size:14px">Mulai otomatis saat pemain cukup</span>
+            <label class="switch"><input type="checkbox" id="s-autostart" checked><i></i></label></div>
+          <div class="field" style="padding:8px 0 2px"><label>MULAI SAAT PEMAIN MENCAPAI</label>
+            <input type="number" id="s-autoat" min="3" max="30" value="5">
+            <div class="hint">Begitu jumlah pemain tercapai, game mulai sendiri dengan hitungan 5 detik.</div></div>
+          <div style="margin-top:10px"><button class="tile small" id="btn-savesettings">SIMPAN PENGATURAN</button></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h4 class="micro" style="margin-bottom:12px">ANTRIAN BRIEF PRODUK — <span id="bcount">0</span></h4>
+        <p class="micro" style="margin-bottom:12px;font-size:10.5px">RONDE MEMAKAI BRIEF SESUAI URUTAN. AKTIF: <span id="border-info" style="color:var(--accent-light)">-</span></p>
+        <div id="brieflist" style="display:flex;flex-direction:column;gap:8px;max-height:300px;overflow:auto"></div>
+        <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+          <button class="tile small" id="btn-addbrief">+ BRIEF BARU</button>
+          <button class="tile small" id="btn-savebriefs">SIMPAN BRIEF</button>
+        </div>
+
+        <div id="briefform" style="display:none;margin-top:14px;border-top:1px dashed var(--line-dark);padding-top:14px">
+          <div class="micro" style="margin-bottom:10px" id="bf-title">EDIT BRIEF</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px" class="bfgrid">
+            <div class="field"><label>KATEGORI</label>
+              <select id="bf-cat">
+                <option value="beverages">🥤 Minuman</option>
+                <option value="food">🍽️ Makanan</option>
+                <option value="fashion">👕 Fashion</option>
+              </select></div>
+            <div class="field"><label>NAMA PRODUK</label><input type="text" id="bf-product" maxlength="60"></div>
+            <div class="field"><label>NAMA BRAND</label><input type="text" id="bf-brand" maxlength="30"></div>
+            <div class="field"><label>KISARAN HARGA</label><input type="text" id="bf-price" maxlength="30"></div>
+          </div>
+          <div class="field"><label>DESKRIPSI SINGKAT</label><input type="text" id="bf-desc" maxlength="200"></div>
+          <div class="field"><label>TARGET PASAR</label><input type="text" id="bf-target" maxlength="80"></div>
+          <div class="field"><label>KEUNGGULAN (USP)</label><input type="text" id="bf-usp" maxlength="120"></div>
+          <div class="field"><label>TEKS WAJIB DI POSTER (OPSIONAL)</label><input type="text" id="bf-mandatory" maxlength="60"></div>
+          <div class="field">
+            <label>FOTO PRODUK (SANGAT DISARANKAN)</label>
+            <input type="file" id="bf-img" accept="image/png,image/jpeg,image/webp">
+            <div class="hint">Foto produk asli akan tampil di brief dan ditempel di tengah setiap poster peserta. Tanpa upload, dipakai ilustrasi otomatis.</div>
+            <div id="bf-img-preview"></div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="tile small" id="bf-save">SIMPAN</button>
+            <button class="ghostbtn" id="bf-cancel" style="padding:10px 16px">BATAL</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ BRIEF ============ -->
+  <section id="ph-brief" style="display:none">
+    <div class="phasebar">
+      <span class="pname">BRIEF PRODUK</span>
+      <span class="micro psub" id="brief-round">RONDE 1/3</span>
+      <div class="timer" id="brief-timer"><span class="num">15</span><div class="bar"><i></i></div></div>
+    </div>
+    <div class="card briefcard" id="brief-card"></div>
+  </section>
+
+  <!-- ============ PROMPTING ============ -->
+  <section id="ph-prompting" style="display:none">
+    <div class="phasebar">
+      <span class="pname">MENULIS PROMPT</span>
+      <span class="micro psub" id="pr-count">0/0 TERKIRIM</span>
+      <div class="timer" id="pr-timer"><span class="num">90</span><div class="bar"><i></i></div></div>
+    </div>
+    <div class="card briefcard" id="pr-brief" style="margin-bottom:14px"></div>
+    <div class="pgrid" id="pr-players"></div>
+  </section>
+
+  <!-- ============ GENERATING ============ -->
+  <section id="ph-generating" style="display:none">
+    <div class="waitscreen">
+      <div class="em">🎨</div>
+      <h2>AI SEDANG MENGGAMBAR…</h2>
+      <p class="serif" style="margin-top:8px" id="gen-count">0 dari 0 poster selesai</p>
+      <div class="timer" style="justify-content:center;margin-top:18px"><div class="bar" style="width:min(420px,70vw)"><i id="gen-bar" style="width:0%"></i></div></div>
+    </div>
+  </section>
+
+  <!-- ============ GALERI ============ -->
+  <section id="ph-gallery" style="display:none">
+    <div class="phasebar">
+      <span class="pname">GALERI POSTER</span>
+      <span class="micro psub" id="gal-sub">LIHAT SEMUA POSTER — BELUM ADA NAMA</span>
+      <div style="display:flex;gap:8px">
+        <button class="tile small green" id="btn-tovoting">MULAI VOTING →</button>
+      </div>
+    </div>
+    <div class="spotwrap" id="gal-spot"></div>
+    <div class="pgrid-posters" id="gal-grid" style="display:none"></div>
+    <div class="micro" style="margin-top:14px;text-align:center" id="gal-juryhint"></div>
+  </section>
+
+  <!-- ============ VOTING ============ -->
+  <section id="ph-voting" style="display:none">
+    <div class="phasebar">
+      <span class="pname">PENILAIAN</span>
+      <span class="micro psub" id="vt-count">menyiapkan…</span>
+      <div class="timer" id="vt-timer"><span class="num">12</span><div class="bar"><i></i></div></div>
+    </div>
+    <div class="spotwrap" style="margin-top:6px">
+      <div class="spot" id="vt-spot" style="cursor:pointer">
+        <span class="lbadge" id="vt-letter">A</span>
+        <span class="juri" id="vt-juri" style="display:none">★ PILIHAN JURI</span>
+        <img id="vt-img" style="max-height:52vh;border-radius:18px;border:2px solid rgba(255,255,255,.25);display:none" alt="Poster">
+        <div class="pcell fail" id="vt-fail" style="width:260px;display:none">gagal dibuat</div>
+      </div>
+    </div>
+    <div class="micro" style="margin-top:14px;text-align:center" id="vt-juryhint"></div>
+  </section>
+
+  <!-- ============ REVEAL ============ -->
+  <section id="ph-reveal" style="display:none">
+    <div class="phasebar">
+      <span class="pname">REVEAL — SIAPA PEMBUATNYA?</span>
+      <span class="micro psub" id="rv-sub"></span>
+      <button class="tile small" id="btn-nextreveal">LANJUT →</button>
+    </div>
+    <div class="revealwrap" id="rv-wrap"></div>
+  </section>
+
+  <!-- ============ SCORES ============ -->
+  <section id="ph-scores" style="display:none">
+    <div class="phasebar">
+      <span class="pname">PAPAN SKOR</span>
+      <span class="micro psub" id="sc-sub">SKOR KUMULATIF</span>
+      <button class="tile small" id="btn-nextround">RONDE BERIKUTNYA →</button>
+    </div>
+    <div class="lb" id="sc-list"></div>
+  </section>
+
+  <!-- ============ PODIUM ============ -->
+  <section id="ph-podium" style="display:none">
+    <div class="champtitle">Prompt Champ!</div>
+    <div class="podium" id="pod-box"></div>
+    <div class="micro" id="pod-posters-title" style="display:none;margin-top:22px;text-align:center">POSTER PEMAIN LAINNYA</div>
+    <div class="pgrid-posters" id="pod-posters" style="margin-top:12px"></div>
+    <div class="lb" id="pod-list" style="margin-top:24px"></div>
+    <div style="display:flex;justify-content:center;gap:12px;margin-top:26px;flex-wrap:wrap">
+      <a class="tile" id="btn-zip" href="#" download>⬇ UNDUH SEMUA POSTER (ZIP)</a>
+      <a class="tile green" id="btn-rekap" href="#" target="_blank">REKAP &amp; CETAK PDF</a>
+      <button class="ghostbtn" id="btn-closeroom" style="padding:14px 24px;font-size:12px">TUTUP ROOM</button>
+    </div>
+    <div class="micro" style="text-align:center;margin-top:12px" id="close-note">Room ditutup setelah semua peserta unduh hasilnya.</div>
+  </section>
+
+</div>
+
+<div id="fatal" class="waitscreen" style="display:none;position:fixed;inset:0;background:var(--stage);z-index:60">
+  <div class="em">⚠️</div>
+  <h2 id="fatal-tx">—</h2>
+  <p class="micro" style="margin-top:10px"><a href="/" style="color:var(--accent-light)">← ke halaman awal</a></p>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/common.js"></script>
+<script src="/js/host.js"></script>
+</body>
+</html>

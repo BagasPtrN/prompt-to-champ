@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#140e0f">
+<title>Pemain — Prompt to Champ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<span class="tick tl"></span><span class="tick tr"></span><span class="tick bl"></span><span class="tick br"></span>
+<div id="now"></div>
+
+<div class="topbar">
+  <span class="micro">✦ PROMPT TO CHAMP</span>
+  <span class="micro" id="t-info"></span>
+  <button class="ghostbtn" data-mute>🔊</button>
+</div>
+
+<div class="pwrap">
+
+  <!-- ===== join ===== -->
+  <section id="pj-join" style="display:none">
+    <div style="text-align:center;padding:6vh 0 20px">
+      <div class="roomcode" id="j-code" style="font-size:clamp(40px,14vw,64px)">----</div>
+      <div class="micro" style="margin-top:6px">KODE ROOM</div>
+    </div>
+    <div class="card">
+      <div class="field">
+        <label>NAMA PANGGUNGMU</label>
+        <input type="text" id="j-name" maxlength="14" placeholder="mis. Bu Rina" style="text-align:center;font-size:18px" autocomplete="off">
+      </div>
+      <button class="tile" id="j-go" style="width:100%;padding:15px">MASUK ROOM →</button>
+      <p class="micro" style="margin-top:12px;text-align:center;line-height:1.8">Ganti tulisan di atas dengan namamu,<br>lalu tekan tombol. Lihat layar besar!</p>
+    </div>
+  </section>
+
+  <!-- ===== fatal ===== -->
+  <section id="pj-fatal" style="display:none">
+    <div class="waitscreen">
+      <div class="em" id="f-em">⚠️</div>
+      <h2 id="f-tx">—</h2>
+      <p class="micro" style="margin-top:10px"><a href="/" style="color:var(--accent-light)">← ke halaman awal</a></p>
+    </div>
+  </section>
+
+  <!-- ===== lobby ===== -->
+  <section id="pj-lobby" style="display:none">
+    <div class="waitscreen">
+      <div class="em">🎊</div>
+      <h2>Hai <span id="lb-name" style="color:var(--accent-light)">—</span>!</h2>
+      <p class="serif" style="margin-top:10px;font-size:19px">Kamu sudah masuk room.</p>
+      <div id="as-banner-p" class="asbanner" style="display:none;margin-top:16px">
+        <div class="micro" style="color:#f5c069">SEMUA SUDAH SIAP — SIAP-SIAP YA!</div>
+        <div class="n"><span id="as-count-p">5</span></div>
+        <div class="micro">GAME DIMULAI OTOMATIS</div>
+      </div>
+      <p class="micro" style="margin-top:16px" id="lb-count">MENUNGGU PEMAIN LAIN…</p>
+      <button class="tile big" id="lb-start" style="margin-top:18px;width:100%;max-width:340px">MULAI SEKARANG →</button>
+      <p class="micro" style="margin-top:8px">tanpa menunggu host — butuh minimal 3 pemain online</p>
+      <div id="lb-list" class="minilb" style="margin-top:18px;text-align:left"></div>
+    </div>
+  </section>
+
+  <!-- ===== brief ===== -->
+  <section id="pj-brief" style="display:none">
+    <div class="phasebar"><span class="pname" style="font-size:14px">BRIEF PRODUK</span>
+      <div class="timer" id="b-timer" style="margin-left:auto"><span class="num" style="font-size:20px">15</span></div></div>
+    <div class="card briefcard" id="b-card"></div>
+    <p class="micro" style="text-align:center;margin-top:14px">SEMUA PEMAIN DAPAT PRODUK YANG SAMA —<br>YANG DIADU: PROMPTMU!</p>
+  </section>
+
+  <!-- ===== prompting ===== -->
+  <section id="pj-prompt" style="display:none">
+    <div class="phasebar"><span class="pname" style="font-size:14px">TULIS PROMPTMU</span>
+      <div class="timer" id="p-timer" style="margin-left:auto"><span class="num" style="font-size:20px">90</span></div></div>
+
+    <div class="stepbanner">
+      <span class="n">1</span><span class="t">Susun posternya</span>
+      <span class="h">tinggal pilih — prompt tersusun sendiri</span>
+    </div>
+
+    <div class="card" style="margin-bottom:12px;padding:12px 14px" id="p-brief"></div>
+
+    <textarea class="pta" id="p-text" maxlength="400" placeholder="Contoh: foto es kopi susu gula aren close-up, embun di gelas, latar meja kayu kafe, cahaya pagi lembut, nama brand di atas…"></textarea>
+    <div class="counter" id="p-counter">0 / 400 huruf</div>
+
+    <!-- alat bantu: pilihan frasa ringkas — tutup default, buka kalau perlu -->
+    <details id="p-helpbox" class="helpbox">
+      <summary><span class="ic">🖐</span> Bantuan kata <span class="hint">ketuk untuk buka/tutup</span></summary>
+      <div id="p-groups"></div>
+    </details>
+
+    <div class="tips" id="p-tips"></div>
+
+    <div class="previewbox" id="p-preview" style="display:none"></div>
+
+    <div class="sticky"><div class="in">
+      <button class="tile green" id="p-send">KIRIM ✓</button>
+      <button class="tile" id="p-lock" disabled>KUNCI 🔒</button>
+    </div></div>
+    <div style="height:76px"></div>
+    <p class="micro" style="text-align:center" id="p-note"></p>
+    <div style="text-align:center;margin-top:8px">
+      <button class="ghostbtn" id="p-regen" style="display:none">↻ ULANGI GAMBAR (1×)</button>
+    </div>
+  </section>
+
+  <!-- ===== generating ===== -->
+  <section id="pj-gen" style="display:none">
+    <div class="waitscreen">
+      <div class="em">🎨</div>
+      <h2>AI Menggambarmu…</h2>
+      <p class="serif" style="margin-top:8px">Lihat layar besar ya.</p>
+    </div>
+  </section>
+
+  <!-- ===== gallery ===== -->
+  <section id="pj-gallery" style="display:none">
+    <div class="waitscreen">
+      <div class="em">🖼️</div>
+      <h2>Galeri Poster</h2>
+      <p class="serif" style="margin-top:8px">Nikmati karya semua pemain di layar besar.</p>
+      <div class="spotwrap" style="margin-top:14px" id="g-spot"></div>
+    </div>
+  </section>
+
+  <!-- ===== voting: rate satu-per-satu (DOM statis, tanpa render ulang) ===== -->
+  <section id="pj-vote" style="display:none">
+    <div class="phasebar"><span class="pname" style="font-size:14px">BERI NILAI</span>
+      <span class="micro" id="v-progress" style="margin-left:auto"></span></div>
+
+    <div class="stepbanner">
+      <span class="n">2</span><span class="t">Beri nilai poster ini</span>
+      <span class="h">1 = kurang · 10 = luar biasa</span>
+    </div>
+
+    <div class="spotwrap">
+      <div class="spot">
+        <span class="lbadge" id="v-letter" style="width:44px;height:44px;font-size:20px;top:-10px;left:-10px">A</span>
+        <img id="v-img" alt="Poster" style="max-height:38vh;border-radius:14px;display:none">
+        <div class="pcell fail" id="v-fail" style="width:200px;display:none">gagal dibuat</div>
+      </div>
+    </div>
+
+    <div id="v-mine" class="specbadge" style="display:none">✨ Ini postermu sendiri — otomatis dilewati</div>
+
+    <div id="v-rater">
+      <p class="micro" style="text-align:center;margin:4px 0 10px">KETUK ANGKA NILAIMU:</p>
+      <div class="rategrid" id="v-rate">
+        <button data-n="1">1</button><button data-n="2">2</button><button data-n="3">3</button><button data-n="4">4</button><button data-n="5">5</button>
+        <button data-n="6">6</button><button data-n="7">7</button><button data-n="8">8</button><button data-n="9">9</button><button data-n="10">10</button>
+      </div>
+      <p class="micro" style="text-align:center;margin-top:10px" id="v-status">Belum menilai — ketuk angka di atas</p>
+    </div>
+  </section>
+
+  <!-- ===== reveal ===== -->
+  <section id="pj-reveal" style="display:none">
+    <div class="phasebar"><span class="pname" style="font-size:14px">REVEAL</span></div>
+    <div id="r-box"></div>
+  </section>
+
+  <!-- ===== scores ===== -->
+  <section id="pj-scores" style="display:none">
+    <div class="phasebar"><span class="pname" style="font-size:14px">PAPAN SKOR</span></div>
+    <div class="minilb" id="s-list"></div>
+  </section>
+
+  <!-- ===== podium ===== -->
+  <section id="pj-podium" style="display:none">
+    <div class="waitscreen">
+      <div class="em">🏆</div>
+      <div class="champtitle" id="pod-champ" style="font-size:32px">—</div>
+      <p class="serif" style="margin-top:12px" id="pod-you">—</p>
+      <div class="minilb" id="pod-list" style="margin-top:20px;text-align:left"></div>
+    </div>
+  </section>
+
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/common.js"></script>
+<script src="/js/player.js"></script>
+</body>
+</html>
