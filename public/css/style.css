@@ -132,6 +132,12 @@ body.scroll .main{padding-bottom:80px}
 .pchip .k{margin-left:auto;background:none;border:none;color:var(--muted);cursor:pointer;font-size:12px;padding:2px 4px}
 .pchip .k:hover{color:var(--red-bright)}
 @keyframes popIn{from{transform:scale(.92);opacity:0}to{transform:none;opacity:1}}
+/* label pemain AI */
+.bottag{
+  display:inline-block;font-family:var(--mono);font-size:8.5px;font-weight:700;letter-spacing:.14em;
+  color:var(--gold);border:1px solid rgba(245,192,105,.45);border-radius:5px;padding:1.5px 6px;
+  margin-left:6px;vertical-align:middle;background:rgba(245,192,105,.08);
+}
 
 /* status ronde prompting */
 .pchip .st{margin-left:auto;font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;color:var(--muted)}

@@ -84,7 +84,20 @@ Provider lain: duplikat `openai.example.js`, sesuaikan bagian `fetch`-nya, ekspo
 
 API key **hanya di `.env` server** — tidak pernah dikirim ke browser peserta. Request dibatasi `MAX_PARALLEL` (default 6) dengan timeout per gambar + retry 1×.
 
-## 5. Testing tanpa peserta sungguhan
+## 5. Main sendiri / testing tanpa peserta sungguhan
+
+### Cara mudah — tombol di layar host (tanpa terminal)
+
+Di lobby host ada tombol **🤖 + TAMBAH BOT**. Klik sampai jumlah pemain
+minimal 3 — hitung mundur mulai otomatis menyala dan game langsung jalan.
+Bot adalah pemain AI sisi server: ikut menulis prompt, mengunci, dan menilai
+poster 1–10 seperti pemain sungguhan. Tombol **− BOT** menghapus bot terakhir
+(hanya bisa di lobby). Maksimal 12 bot per room.
+
+> Praktis untuk latihan sendiri, cek alur pelatihan, atau mengisi kursi kosong
+> saat peserta kurang di day pelatihan.
+
+### Cara lama — bot dari terminal
 
 Server harus jalan (`npm start`), lalu di terminal kedua:
 

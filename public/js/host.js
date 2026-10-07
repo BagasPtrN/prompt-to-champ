@@ -102,11 +102,20 @@ function renderLobby(st){
   $('pcount').textContent = act.length + (st.players.some(p => p.spectator) ? ` (+${st.players.filter(p=>p.spectator).length} penonton)` : '');
   $('playerlist').innerHTML = st.players.map(p => `
     <div class="pchip ${p.connected ? '' : 'off'} ${p.spectator ? 'spec' : ''}" title="${p.spectator ? 'menunggu ronde berikutnya' : ''}">
-      <span class="dot"></span>${esc(p.name)}
+      <span class="dot"></span>${esc(p.name)}${p.bot ? '<span class="bottag">BOT</span>' : ''}
       <button class="k" data-kick="${p.pid}" title="keluarkan">✕</button>
     </div>`).join('') || '<div class="micro">menunggu pemain scan QR…</div>';
   $('playerlist').querySelectorAll('[data-kick]').forEach(b =>
     b.onclick = () => socket.emit('host:action', { action: 'kick', data: { pid: b.dataset.kick } }));
+
+  /* bot: tambah/hapus agar bisa langsung main walau pemain kurang */
+  const nBots = st.players.filter(p => p.bot).length;
+  $('btn-addbot').onclick = () => socket.emit('host:action', { action: 'addBot' });
+  $('btn-rmbot').style.display = nBots ? 'inline-block' : 'none';
+  $('btn-rmbot').onclick = () => socket.emit('host:action', { action: 'removeBot' });
+  $('bot-hint').textContent = nBots
+    ? `${nBots} bot aktif — mereka ikut menulis & menilai`
+    : 'sendirian? tambah bot sampai 3 pemain, langsung bisa main';
 
   $('btn-start').disabled = act.length < 3;
   $('start-hint').textContent = act.length < 3 ? `butuh ${3 - act.length} pemain lagi` : `${act.length} pemain siap 🎉`;

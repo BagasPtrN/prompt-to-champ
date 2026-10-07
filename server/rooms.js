@@ -128,6 +128,7 @@ function closeRoom(io, room){
   if (room.closed) return;
   room.closed = true;
   clearTimeout(room.timer); clearInterval(room.carousel);
+  clearInterval(room.botTimer); room.botTimer = null;
   clearStartCountdown(room);
   /* io boleh null (mis. dipanggil sweeper TTL) — jangan sampai crash */
   if (io && typeof io.to === 'function') io.to(room.code).emit('room:closed');
@@ -135,6 +136,94 @@ function closeRoom(io, room){
   rooms.delete(room.code);
   console.log(`[rooms] Room ditutup: ${room.code}${io ? '' : ' (TTL kedaluwarsa, tidak ada siaran)'}`);
 }
+
+/* ---------------- BOT BAWAAN — pemain AI sisi server ----------------
+   Host menambah bot dari layar lobby agar game bisa langsung dimainkan
+   walau pemain manusia belum cukup. Bot menulis prompt & menilai lewat
+   playerAction yang sama dengan pemain sungguhan. */
+const BOT_NAMES = ['Bot Rina','Bot Deng','Bot Sari','Bot Budi','Bot Mega','Bot Joko','Bot Tuti','Bot Agus','Bot Wati','Bot Rama','Bot Ita','Bot Deni'];
+const pick = a => a[Math.floor(Math.random() * a.length)];
+
+function botPromptText(brief){
+  const produk = String(brief.product || 'produk').toLowerCase();
+  return [
+    `${pick(['foto studio', 'flat-lay dari atas', 'close-up detail', 'gaya editorial majalah'])} ${produk}`,
+    pick(['cahaya lembut', 'golden hour', 'cahaya hangat sidelight', 'terang dan bersih']),
+    'latar ' + pick(['meja kayu', 'daun pisang', 'polos pastel', 'meja rumah makan']),
+    'mood ' + pick(['hangat dan homey', 'segar dan ceria', 'mewah dan elegan']),
+  ].join(', ').slice(0, 400);
+}
+
+function addBotPlayer(io, room){
+  const bots = room.activePlayers().filter(p => p.bot);
+  if (bots.length >= 12) return { ok:false, reason:'Maksimal 12 bot per room.' };
+  const used = new Set(room.activePlayers().map(p => p.name));
+  const name = BOT_NAMES.find(n => !used.has(n)) || ('Bot ' + id().slice(0, 4));
+  const player = {
+    pid: id(), token: id(), name, score: 0,
+    spectator: room.phase !== 'lobby', kicked: false, connected: true,
+    bot: true, actAt: 0,
+  };
+  room.players.set(player.pid, player);
+  ensureBotLoop(io, room);
+  evaluateAutoStart(io, room);
+  broadcast(io, room);
+  console.log(`[room ${room.code}] bot ditambah: ${name}`);
+  return { ok:true, name };
+}
+
+function removeBotPlayer(io, room){
+  const bots = room.activePlayers().filter(p => p.bot);
+  if (!bots.length) return { ok:false, reason:'Tidak ada bot untuk dihapus.' };
+  bots[bots.length - 1].kicked = true;
+  if (!room.activePlayers().some(p => p.bot)) { clearInterval(room.botTimer); room.botTimer = null; }
+  evaluateAutoStart(io, room);
+  broadcast(io, room);
+  return { ok:true };
+}
+
+/* satu interval per room — bot "mengetik" & menilai dengan jeda manusiawi */
+function ensureBotLoop(io, room){
+  if (room.botTimer) return;
+  room.botTimer = setInterval(() => {
+    try { botTick(io, room); } catch (e) { console.error(`[room ${room.code}] botTick:`, e.message); }
+  }, 1200);
+  if (room.botTimer.unref) room.botTimer.unref();
+}
+
+function botTick(io, room){
+  if (room.closed) { clearInterval(room.botTimer); room.botTimer = null; return; }
+  const bots = room.activePlayers().filter(p => p.bot && !p.kicked);
+  if (!bots.length) { clearInterval(room.botTimer); room.botTimer = null; return; }
+  const now = Date.now();
+  const r = room.round;
+  for (const b of bots){
+    if (b.spectator) continue;
+    if (now < (b.actAt || 0)) continue;
+    if (room.phase === 'prompting' && r){
+      const s = r.submissions.get(b.pid);
+      if (!s || !s.lockedAt){
+        if (!s || !s.prompt){
+          b.actAt = now + 2000 + Math.random() * 9000; /* jeda "menyusun kata" */
+          playerAction(io, room, b, 'prompt', { prompt: botPromptText(briefById(room, r.briefId)) });
+        } else {
+          b.actAt = now + 2000 + Math.random() * 5000;
+          playerAction(io, room, b, 'lock', {});
+        }
+      }
+    } else if (room.phase === 'voting' && r){
+      const pid = r.galleryOrder[r.galleryCursor];
+      const m = pid != null ? r.ratings.get(pid) : null;
+      if (pid != null && pid !== b.pid && !(m && m.has(b.pid))){
+        b.actAt = now + 1000 + Math.random() * 3500;
+        playerAction(io, room, b, 'rate', { letter: letterOf(room, pid), score: 4 + Math.floor(Math.random() * 7) });
+      }
+    } else {
+      b.actAt = 0; /* fase lain: siaga */
+    }
+  }
+}
+/* ---------------- (akhir bot) ---------------- */
 
 /* ---------------- Mulai otomatis / mulai oleh pemain ---------------- */
 const AUTO_START_MS = 5000;
@@ -549,6 +638,14 @@ const hostActions = {
     broadcast(io, room);
     return { ok:true };
   },
+  addBot(io, room){
+    if (room.closed) return { ok:false, reason:'Room sudah ditutup.' };
+    return addBotPlayer(io, room);
+  },
+  removeBot(io, room){
+    if (room.phase !== 'lobby') return { ok:false, reason:'Bot hanya bisa dihapus di lobby.' };
+    return removeBotPlayer(io, room);
+  },
   jury(io, room, { pid }){
     if (!room.settings.juryEnabled) return { ok:false, reason:'Bonus juri dimatikan di pengaturan.' };
     if (room.phase !== 'gallery' && room.phase !== 'voting' && room.phase !== 'generating')
@@ -680,6 +777,13 @@ function playerAction(io, room, player, action, data){
     const lockedCount = [...r.submissions.values()].filter(x => x.lockedAt && x.speedBonus).length;
     if (lockedCount < 3) s.speedBonus = 1;
     broadcast(io, room);
+    /* semua pemain sudah kunci → maju lebih cepat (jangan buang waktu tunggu) */
+    const eligible = room.activePlayers().filter(p => !p.spectator);
+    if (!room.paused && eligible.length && eligible.every(p => (r.submissions.get(p.pid) || {}).lockedAt)){
+      clearTimeout(room.timer);
+      room.endsAt = Date.now() + 1500; /* jeda napas 1,5 dtk */
+      room.timer = setTimeout(() => phaseEnded(io, room), 1500);
+    }
     return { ok:true };
   }
 
@@ -764,7 +868,7 @@ function publicState(room){
   const players = room.activePlayers().map(p => {
     const s = r && r.submissions.get(p.pid);
     return {
-      pid: p.pid, name: p.name, connected: p.connected, spectator: p.spectator,
+      pid: p.pid, name: p.name, connected: p.connected, spectator: p.spectator, bot: !!p.bot,
       score: room.totals.get(p.pid) || 0,
       submitted: !!(s && s.prompt), locked: !!(s && s.lockedAt),
       voted: !!(r && room.phase === 'voting' && r.ratings.get(r.galleryOrder[r.galleryCursor])?.has(p.pid)),

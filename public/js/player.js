@@ -118,8 +118,8 @@ function rLobby(st){
   if (st.autoStartEndsAt) btn.disabled = true;
 
   $('lb-list').innerHTML = st.players.map(p => `
-    <div class="lbrow"><span class="nm" style="font-size:14px">${esc(p.name)}${p.pid === (st.me && st.me.pid) ? ' (kamu)' : ''}</span>
-    <span class="micro">${p.spectator ? 'penonton' : p.connected ? 'online' : 'terputus'}</span></div>`).join('');
+    <div class="lbrow"><span class="nm" style="font-size:14px">${esc(p.name)}${p.pid === (st.me && st.me.pid) ? ' (kamu)' : ''}${p.bot ? ' <span class="bottag">BOT</span>' : ''}</span>
+    <span class="micro">${p.bot ? 'pemain AI' : p.spectator ? 'penonton' : p.connected ? 'online' : 'terputus'}</span></div>`).join('');
 }
 $('lb-start').onclick = () => socket.emit('player:action', { action: 'start' });
 
