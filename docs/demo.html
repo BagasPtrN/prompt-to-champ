@@ -226,7 +226,7 @@ function showPrompt(){
       <button class="tile ghost" onclick="showBrief()">← brief</button>
       <button class="tile" id="go">KIRIM ✓</button>
     </div>
-    <p class="note">Ketuk chip untuk menambah frasa ke prompt-mu — persis seperti di game.</p>`;
+    <p class="note">Ketuk chip untuk menambah/mengeluarkan frasa — persis seperti di game.</p>`;
 
   const ta = document.getElementById('pta');
   const cnt = document.getElementById('cnt');
@@ -241,8 +241,20 @@ function showPrompt(){
   ta.addEventListener('input', upd);
   document.querySelectorAll('.hchips button').forEach(btn => btn.onclick = () => {
     const ph = btn.dataset.o;
-    if (ta.value.includes(ph)) return;
-    ta.value = (ta.value.trim() ? ta.value.trim().replace(/[.\s]+$/, '') + ', ' : '') + ph;
+    const cur = ta.value.trim();
+    if (cur.includes(ph)){
+      /* ketuk lagi = keluarkan frasa */
+      let parts = cur.split(',').map(s => s.trim()).filter(Boolean);
+      const n0 = parts.length;
+      parts = parts.filter(p => p !== ph);
+      if (parts.length === n0){
+        parts = parts.map(p => p.includes(ph)
+          ? p.replace(ph, '').replace(/^[\s,]+|[\s,]+$/g, '') : p).filter(Boolean);
+      }
+      ta.value = parts.join(', ');
+    } else {
+      ta.value = (cur ? cur.replace(/[.\s]+$/, '') + ', ' : '') + ph;
+    }
     upd();
   });
   go.onclick = () => { prompt = ta.value.trim(); showGenerating(); };

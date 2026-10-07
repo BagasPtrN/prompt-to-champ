@@ -146,18 +146,31 @@ function rBrief(st){ showOnly('pj-brief'); $('b-card').innerHTML = briefMini(st,
 /* ---------- PROMPTING (tulis bebas utama + bantuan kata) ---------- */
 const ta = $('p-text');
 
-/* sisipkan frasa ke textarea (kalau belum ada) */
+/* ketuk chip = toggle: masukkan frasa, atau keluarkan kalau sudah ada */
 function insertPhrase(phrase){
   if (ta.disabled) return;
   const cur = ta.value.trim();
-  if (cur.includes(phrase)){ SFX.back(); return; } /* sudah ada — abaikan */
-  ta.value = (cur ? cur.replace(/[.\s]+$/, '') + ', ' : '') + phrase;
+  if (cur.includes(phrase)){
+    /* keluarkan frasa: potong bagian per-koma, buang yang sama persis */
+    let parts = cur.split(',').map(s => s.trim()).filter(Boolean);
+    const n0 = parts.length;
+    parts = parts.filter(p => p !== phrase);
+    if (parts.length === n0){
+      /* frasa menempel di teks ubahan pemain — coret dari bagiannya */
+      parts = parts.map(p => p.includes(phrase)
+        ? p.replace(phrase, '').replace(/^[\s,]+|[\s,]+$/g, '') : p).filter(Boolean);
+    }
+    ta.value = parts.join(', ');
+    SFX.back();
+  } else {
+    ta.value = (cur ? cur.replace(/[.\s]+$/, '') + ', ' : '') + phrase;
+    SFX.click();
+  }
   ta.focus();
   ta.setSelectionRange(ta.value.length, ta.value.length);
   updateCounter();
   updateSendState();
   paintHelpSelections();
-  SFX.click();
 }
 
 /* tandai pilihan bantuan yang sudah masuk ke prompt */
